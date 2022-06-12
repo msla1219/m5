@@ -1,12 +1,15 @@
 import requests
 import json
 
-
 def pin_to_ipfs(data):
     assert isinstance(data, dict), f"Error pin_to_ipfs expects a dictionary"
-    # YOUR CODE HERE
 
-    response = requests.post('https://ipfs.infura.io:5001/api/v0/add', files=data, json={"key": "value"})
+    files = {
+        'file': (json.dumps(data)),
+    }
+
+    response = requests.post('https://ipfs.infura.io:5001/api/v0/add', files=files)
+
     p = response.json()
     cid = p['Hash']
 
@@ -21,15 +24,10 @@ def get_from_ipfs(cid, content_type="json"):
         ('arg', cid),
     )
 
-    response = requests.post('https://ipfs.infura.io:5001/api/v0/cat', params=params, json={"key": "value"})
+    response = requests.post('https://ipfs.infura.io:5001/api/v0/cat', params=params)
 
-    data = response.__dict__
-
-    # data = response.json()
-
-    # ?? how to convert the text (string) output to dictionary?
+    data = json.loads(response.text)
 
     assert isinstance(data, dict), f"get_from_ipfs should return a dict"
 
     return data
-
